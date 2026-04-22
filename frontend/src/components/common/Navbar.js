@@ -30,9 +30,8 @@ export default function Navbar() {
       <div className="container navbar-inner">
         <Link to="/" className="navbar-logo">
           <span className="logo-icon">
-            <img src="/my-logo.png" alt="Logo" style={{ height: '30px' }} />
+            <img src="/my-logo.png" alt="Logo" style={{ height: '200px' }} />
         </span>
-          <span className="logo-text">Ink<strong>Weave</strong></span>
         </Link>
 
         <div className={`navbar-links ${menuOpen ? 'open' : ''}`}>

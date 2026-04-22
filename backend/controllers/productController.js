@@ -27,16 +27,60 @@ exports.getProducts = async (req, res) => {
 exports.getProduct = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product || !product.isActive) return res.status(404).json({ message: 'Product not found' });
+    if (!product || !product.isActive)
+      return res.status(404).json({ message: 'Product not found' });
     res.json({ product });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
+// Helper: parse stringified JSON fields coming from FormData
+const parseBodyFields = (body) => {
+  if (typeof body.colors === 'string') {
+    try { body.colors = JSON.parse(body.colors); } catch {}
+  }
+  if (typeof body.sizes === 'string') {
+    try { body.sizes = JSON.parse(body.sizes); } catch {}
+  }
+  if (typeof body.printAreas === 'string') {
+    try { body.printAreas = JSON.parse(body.printAreas); } catch {}
+  }
+  if (typeof body.bulkPricing === 'string') {
+    try { body.bulkPricing = JSON.parse(body.bulkPricing); } catch {}
+  }
+  if (typeof body.tags === 'string') {
+    try { body.tags = JSON.parse(body.tags); }
+    catch { body.tags = body.tags.split(',').map(t => t.trim()).filter(Boolean); }
+  }
+  return body;
+};
+
+// Helper: build images array from uploaded files or pasted URLs
+const buildImages = (req, body) => {
+  if (req.files && req.files.length > 0) {
+    return req.files.map(file => ({
+      url: `${process.env.SERVER_URL || 'http://localhost:5000'}/uploads/products/${file.filename}`,
+      alt: body.name || 'Product image'
+    }));
+  }
+  if (body.imageUrls) {
+    const images = body.imageUrls
+      .split(',')
+      .map(url => ({ url: url.trim(), alt: body.name || 'Product image' }))
+      .filter(i => i.url);
+    delete body.imageUrls;
+    return images;
+  }
+  return null;
+};
+
 exports.createProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const body = parseBodyFields({ ...req.body });
+    const images = buildImages(req, body);
+    if (images) body.images = images;
+    const product = await Product.create(body);
     res.status(201).json({ product });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -45,7 +89,13 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const body = parseBodyFields({ ...req.body });
+    const images = buildImages(req, body);
+    if (images) body.images = images;
+    else delete body.images; // keep existing images if none provided
+    const product = await Product.findByIdAndUpdate(
+      req.params.id, body, { new: true, runValidators: true }
+    );
     if (!product) return res.status(404).json({ message: 'Product not found' });
     res.json({ product });
   } catch (err) {
@@ -92,9 +142,15 @@ exports.seedProducts = async (req, res) => {
           { name: 'left-sleeve', additionalPrice: 30 },
           { name: 'right-sleeve', additionalPrice: 30 }
         ],
-        bulkPricing: [{ minQty: 10, discount: 10 }, { minQty: 50, discount: 20 }],
+        bulkPricing: [
+          { minQty: 10, discount: 10 },
+          { minQty: 50, discount: 20 }
+        ],
         tags: ['cotton', 'basic', 'casual', 'round-neck'],
-        images: [{ url: 'https://via.placeholder.com/400x400/FFFFFF/000000?text=Round+Neck', alt: 'Round Neck T-Shirt' }]
+        images: [{
+          url: 'https://via.placeholder.com/400x400/FFFFFF/000000?text=Round+Neck',
+          alt: 'Round Neck T-Shirt'
+        }]
       },
       {
         name: 'Premium Polo T-Shirt',
@@ -107,15 +163,25 @@ exports.seedProducts = async (req, res) => {
           { name: 'Royal Blue', hex: '#1565c0', stock: 60 }
         ],
         sizes: [
-          { size: 'S', additionalPrice: 0 }, { size: 'M', additionalPrice: 0 },
-          { size: 'L', additionalPrice: 30 }, { size: 'XL', additionalPrice: 50 }, { size: 'XXL', additionalPrice: 70 }
+          { size: 'S', additionalPrice: 0 },
+          { size: 'M', additionalPrice: 0 },
+          { size: 'L', additionalPrice: 30 },
+          { size: 'XL', additionalPrice: 50 },
+          { size: 'XXL', additionalPrice: 70 }
         ],
         printAreas: [
-          { name: 'front', additionalPrice: 0 }, { name: 'back', additionalPrice: 60 }
+          { name: 'front', additionalPrice: 0 },
+          { name: 'back', additionalPrice: 60 }
         ],
-        bulkPricing: [{ minQty: 10, discount: 12 }, { minQty: 50, discount: 22 }],
+        bulkPricing: [
+          { minQty: 10, discount: 12 },
+          { minQty: 50, discount: 22 }
+        ],
         tags: ['polo', 'corporate', 'premium'],
-        images: [{ url: 'https://via.placeholder.com/400x400/1565c0/FFFFFF?text=Polo+Shirt', alt: 'Polo T-Shirt' }]
+        images: [{
+          url: 'https://via.placeholder.com/400x400/1565c0/FFFFFF?text=Polo+Shirt',
+          alt: 'Polo T-Shirt'
+        }]
       },
       {
         name: 'V-Neck Cotton T-Shirt',
@@ -128,14 +194,22 @@ exports.seedProducts = async (req, res) => {
           { name: 'Grey', hex: '#9e9e9e', stock: 50 }
         ],
         sizes: [
-          { size: 'XS', additionalPrice: 0 }, { size: 'S', additionalPrice: 0 },
-          { size: 'M', additionalPrice: 0 }, { size: 'L', additionalPrice: 25 },
+          { size: 'XS', additionalPrice: 0 },
+          { size: 'S', additionalPrice: 0 },
+          { size: 'M', additionalPrice: 0 },
+          { size: 'L', additionalPrice: 25 },
           { size: 'XL', additionalPrice: 40 }
         ],
-        printAreas: [{ name: 'front', additionalPrice: 0 }, { name: 'back', additionalPrice: 50 }],
+        printAreas: [
+          { name: 'front', additionalPrice: 0 },
+          { name: 'back', additionalPrice: 50 }
+        ],
         bulkPricing: [{ minQty: 10, discount: 10 }],
         tags: ['v-neck', 'slim-fit', 'casual'],
-        images: [{ url: 'https://via.placeholder.com/400x400/9e9e9e/FFFFFF?text=V-Neck', alt: 'V-Neck T-Shirt' }]
+        images: [{
+          url: 'https://via.placeholder.com/400x400/9e9e9e/FFFFFF?text=V-Neck',
+          alt: 'V-Neck T-Shirt'
+        }]
       },
       {
         name: 'Pullover Hoodie',
@@ -148,13 +222,25 @@ exports.seedProducts = async (req, res) => {
           { name: 'Grey', hex: '#616161', stock: 50 }
         ],
         sizes: [
-          { size: 'S', additionalPrice: 0 }, { size: 'M', additionalPrice: 0 },
-          { size: 'L', additionalPrice: 50 }, { size: 'XL', additionalPrice: 80 }, { size: 'XXL', additionalPrice: 100 }
+          { size: 'S', additionalPrice: 0 },
+          { size: 'M', additionalPrice: 0 },
+          { size: 'L', additionalPrice: 50 },
+          { size: 'XL', additionalPrice: 80 },
+          { size: 'XXL', additionalPrice: 100 }
         ],
-        printAreas: [{ name: 'front', additionalPrice: 0 }, { name: 'back', additionalPrice: 80 }],
-        bulkPricing: [{ minQty: 5, discount: 8 }, { minQty: 20, discount: 15 }],
+        printAreas: [
+          { name: 'front', additionalPrice: 0 },
+          { name: 'back', additionalPrice: 80 }
+        ],
+        bulkPricing: [
+          { minQty: 5, discount: 8 },
+          { minQty: 20, discount: 15 }
+        ],
         tags: ['hoodie', 'winter', 'fleece'],
-        images: [{ url: 'https://via.placeholder.com/400x400/000000/FFFFFF?text=Hoodie', alt: 'Pullover Hoodie' }]
+        images: [{
+          url: 'https://via.placeholder.com/400x400/000000/FFFFFF?text=Hoodie',
+          alt: 'Pullover Hoodie'
+        }]
       }
     ];
     await Product.insertMany(products);

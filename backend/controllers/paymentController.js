@@ -1,3 +1,5 @@
+require('dotenv').config();
+console.log('KEY IN PAYMENT CONTROLLER:', process.env.STRIPE_SECRET_KEY?.slice(0,15));
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Order = require('../models/Order');
 

@@ -1,0 +1,15 @@
+{
+  "name": "printcraft-tshirt-store",
+  "version": "1.0.0",
+  "description": "Full-stack custom t-shirt printing e-commerce app",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm start --prefix frontend",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "start": "npm start --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

@@ -1,0 +1,14 @@
+.profile-page {}
+.profile-grid { display: grid; grid-template-columns: 260px 1fr; gap: 28px; padding-bottom: 60px; }
+.profile-card { background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 32px 24px; text-align: center; height: fit-content; position: sticky; top: 88px; }
+.profile-avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); color: white; font-family: var(--font-display); font-size: 2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.profile-name { font-weight: 700; font-size: 1.1rem; }
+.profile-email { color: var(--ink-muted); font-size: 0.875rem; margin-top: 4px; }
+.profile-forms { display: flex; flex-direction: column; gap: 20px; }
+.profile-section { background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 28px; }
+.profile-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 20px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.input-group { margin-bottom: 16px; }
+@media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } .profile-card { position: static; } }
+@media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }

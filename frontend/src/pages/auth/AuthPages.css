@@ -1,0 +1,22 @@
+.auth-page {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 100px 24px 48px;
+  background: radial-gradient(ellipse at 60% 20%, rgba(232,69,69,0.08), transparent 60%),
+              radial-gradient(ellipse at 20% 80%, rgba(245,166,35,0.06), transparent 50%), var(--paper);
+}
+.auth-card {
+  background: white; border-radius: var(--radius-lg);
+  border: 1px solid var(--border); padding: 48px;
+  width: 100%; max-width: 440px; box-shadow: var(--shadow-lg);
+}
+.auth-logo { font-family: var(--font-display); font-size: 1.3rem; color: var(--accent); margin-bottom: 28px; }
+.auth-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 6px; }
+.auth-sub { color: var(--ink-muted); margin-bottom: 28px; }
+.auth-form { display: flex; flex-direction: column; gap: 4px; }
+.auth-form .input-group { margin-bottom: 14px; }
+.auth-btn { width: 100%; justify-content: center; gap: 8px; margin-top: 8px; }
+.auth-hint { text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--ink-muted); }
+.auth-hint a { color: var(--accent); font-weight: 600; }
+.demo-creds { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; font-size: 0.82rem; color: var(--ink-muted); }
+.demo-title { font-weight: 600; margin-bottom: 4px; }
+.demo-creds code { background: var(--paper-off); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; }

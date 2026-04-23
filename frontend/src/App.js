@@ -17,6 +17,7 @@ import OrdersPage from './pages/OrdersPage';
 import ProfilePage from './pages/ProfilePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 
 // Admin
 import AdminLayout from './pages/admin/AdminLayout';
@@ -49,20 +50,18 @@ export default function App() {
             }}
           />
           <Routes>
-            {/* Public routes with Navbar + Footer */}
             <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
             <Route path="/products" element={<AppLayout><ProductsPage /></AppLayout>} />
             <Route path="/products/:id" element={<AppLayout><ProductDetailPage /></AppLayout>} />
             <Route path="/cart" element={<AppLayout><CartPage /></AppLayout>} />
             <Route path="/login" element={<AppLayout><LoginPage /></AppLayout>} />
             <Route path="/register" element={<AppLayout><RegisterPage /></AppLayout>} />
+            <Route path="/forgot-password" element={<AppLayout><ForgotPasswordPage /></AppLayout>} />
 
-            {/* Protected customer routes */}
             <Route path="/checkout" element={<AppLayout><ProtectedRoute><CheckoutPage /></ProtectedRoute></AppLayout>} />
             <Route path="/orders" element={<AppLayout><ProtectedRoute><OrdersPage /></ProtectedRoute></AppLayout>} />
             <Route path="/profile" element={<AppLayout><ProtectedRoute><ProfilePage /></ProtectedRoute></AppLayout>} />
 
-            {/* Admin routes (no footer, has sidebar) */}
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="orders" element={<AdminOrders />} />
@@ -70,14 +69,13 @@ export default function App() {
               <Route path="users" element={<AdminUsers />} />
             </Route>
 
-            {/* 404 */}
             <Route path="*" element={
               <AppLayout>
                 <div className="page flex-center" style={{ minHeight: '70vh' }}>
                   <div className="empty-state">
                     <div className="icon">🔍</div>
                     <h3>Page not found</h3>
-                    <p>The page you're looking for doesn't exist.</p>
+                    <p>The page you are looking for does not exist.</p>
                     <a href="/" className="btn btn-primary" style={{ marginTop: 20 }}>Go Home</a>
                   </div>
                 </div>

@@ -8,7 +8,7 @@ const orderItemSchema = new mongoose.Schema({
   color: String,
   customization: {
     designText: String,
-    designImage: String,  // URL to uploaded design
+    designImage: String,
     printArea: String,
     font: String,
     textColor: String,
@@ -23,12 +23,12 @@ const orderSchema = new mongoose.Schema({
   orderNumber: { type: String, unique: true },
   items: [orderItemSchema],
   shippingAddress: {
-    name: String,
-    phone: String,
-    street: String,
-    city: String,
-    state: String,
-    zip: String,
+    name: { type: String, required: true },
+    phone: { type: String, required: true },
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zip: { type: String, required: true },
     country: { type: String, default: 'India' }
   },
   pricing: {
@@ -60,11 +60,10 @@ const orderSchema = new mongoose.Schema({
   notes: String
 }, { timestamps: true });
 
-// Auto-generate order number
 orderSchema.pre('save', async function (next) {
   if (!this.orderNumber) {
     const count = await mongoose.model('Order').countDocuments();
-    this.orderNumber = `TSHIRT-${Date.now()}-${String(count + 1).padStart(4, '0')}`;
+    this.orderNumber = 'TSHIRT-' + Date.now() + '-' + String(count + 1).padStart(4, '0');
   }
   next();
 });

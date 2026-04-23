@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
 
 const generateToken = (id) =>
@@ -62,7 +63,57 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-// Seed admin user - call once
+// Step 1: Customer enters email → get reset token
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).json({ message: 'No account found with that email address' });
+
+    const token = user.getResetPasswordToken();
+    await user.save({ validateBeforeSave: false });
+
+    res.json({
+      message: 'Reset token generated successfully',
+      resetToken: token, // In production this would be emailed
+      userId: user._id,
+      note: 'Use this token to reset your password within 15 minutes'
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Step 2: Customer submits token + new password
+exports.resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user)
+      return res.status(400).json({ message: 'Invalid or expired reset token' });
+
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    res.json({
+      token: generateToken(user._id),
+      user,
+      message: 'Password reset successfully'
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 exports.seedAdmin = async (req, res) => {
   try {
     const existing = await User.findOne({ role: 'admin' });

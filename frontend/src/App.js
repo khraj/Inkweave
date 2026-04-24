@@ -15,6 +15,8 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrdersPage from './pages/OrdersPage';
 import ProfilePage from './pages/ProfilePage';
+import CustomizePage from './pages/CustomizePage';
+import AboutPage from './pages/AboutPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
@@ -54,6 +56,8 @@ export default function App() {
             <Route path="/products" element={<AppLayout><ProductsPage /></AppLayout>} />
             <Route path="/products/:id" element={<AppLayout><ProductDetailPage /></AppLayout>} />
             <Route path="/cart" element={<AppLayout><CartPage /></AppLayout>} />
+            <Route path="/customize" element={<AppLayout><CustomizePage /></AppLayout>} />
+            <Route path="/about" element={<AppLayout><AboutPage /></AppLayout>} />
             <Route path="/login" element={<AppLayout><LoginPage /></AppLayout>} />
             <Route path="/register" element={<AppLayout><RegisterPage /></AppLayout>} />
             <Route path="/forgot-password" element={<AppLayout><ForgotPasswordPage /></AppLayout>} />

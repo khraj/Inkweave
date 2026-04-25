@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="container footer-inner">
         <div className="footer-brand">
-          <div className="footer-logo">🎨 Print<strong>Craft</strong></div>
+          <div className="footer-logo">INK<strong>WEAVE</strong></div>
           <p>Premium custom t-shirt printing. Design your story, wear your identity.</p>
         </div>
         <div className="footer-links">

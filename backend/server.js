@@ -9,7 +9,16 @@ connectDB();
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:3000',
+  'http://localhost:8080',
+].filter(Boolean);
+
+app.use(cors({ 
+  origin: allowedOrigins.length > 0 ? allowedOrigins : '*',
+  credentials: true 
+}));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
